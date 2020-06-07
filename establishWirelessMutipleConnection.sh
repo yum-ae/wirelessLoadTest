@@ -1,4 +1,7 @@
 SSID="SiteSurvey2"
+# Below NetworkManager audit seems to cause disconnected (reason -3)
+# 6月 01 16:34:37 mdstadmin-UX32VD NetworkManager[842]: <info>  [1590996877.3425] audit: op="connection-activate" uuid="d7a9497c-ef6e-4fd3-9c48-bec160490e08" name="SiteSurvey2 26" pid=8546 uid=0 resul
+# To avoid this error
 
 for i in $(seq -w 16 216); do
     echo "vwlan$i"

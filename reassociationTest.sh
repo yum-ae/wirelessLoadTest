@@ -5,25 +5,20 @@ SSID="GL-AR750S-a6a-Guest"
 # LimitNOFILE=4096 <- add
 
 # creating too many (more than 140) vif at once, may cause buffer overflow of wpa_supplicant
-sudo systemctl stop NetworkManager
-for i in $(seq -w 16 150); 
+
+for i in $(seq -w 16 150); do
     echo "vwlan$i"
     hex=$(echo "obase=16; $i" | bc)
-    echo "aa:bb:00:dd:ee:"$hex
-    sudo iw phy0 interface add vwlan$i type managed addr aa:bb:00:dd:ee:$hex
+    echo "aa:bb:cc:dd:ee:"$hex
+    sudo iw phy0 interface add vwlan$i type managed addr aa:bb:cc:dd:ee:$hex
 done
 # After interface activation, it requires about 9 seconds to connect to an AP
 sleep 10
 for i in $(seq -w 16 150); do
-    sudo wpa_supplicant -B -i vwlan$i -c /etc/wpa_supplicant/wpa_supplicant.conf &
+    sudo nmcli device wifi connect $SSID ifname vwlan$i & 
     echo "exit with "$?
-    sleep 0.005
-done
-# to delete interface `sudo iw dev vwlan0 del`
-# write out csv to be used in JMeter
-for i in $(seq -w 16 150); do
-    sudo dhclient vwlan$i &
     sleep 5
 done
-sleep 10
-ip -4 a | grep -oP '(?<=inet\s)\d+(\.\d+){3}' | grep -v "127.0.0.1" > ipaddr.csv
+for i in $(seq -w 16 150); do
+    sudo wpa_cli reassociate -i vwlan$i
+done

@@ -6,7 +6,7 @@ SSID="GL-AR750S-a6a-Guest"
 
 # creating too many (more than 140) vif at once, may cause buffer overflow of wpa_supplicant
 sudo systemctl stop NetworkManager
-for i in $(seq -w 16 150); 
+for i in $(seq -w 16 150); do
     echo "vwlan$i"
     hex=$(echo "obase=16; $i" | bc)
     echo "aa:bb:00:dd:ee:"$hex
@@ -23,7 +23,7 @@ done
 # write out csv to be used in JMeter
 for i in $(seq -w 16 150); do
     sudo dhclient vwlan$i &
-    sleep 5
+    sleep 1
 done
-sleep 10
+sleep 30
 ip -4 a | grep -oP '(?<=inet\s)\d+(\.\d+){3}' | grep -v "127.0.0.1" > ipaddr.csv

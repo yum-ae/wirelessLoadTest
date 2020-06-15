@@ -16,7 +16,7 @@ done
 # After interface activation, it requires about 9 seconds to connect to an AP
 sleep 2
 for i in $(seq -w 16 150); do
-    sudo wpa_supplicant -B -i vwlan$i -c /etc/wpa_supplicant/wpa_supplicant.conf &
+    sudo wpa_supplicant -B -i vwlan$i -c ./wpa_supplicant.conf &
     echo "exit with "$?
     sleep 0.005
 done

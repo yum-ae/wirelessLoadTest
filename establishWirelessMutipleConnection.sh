@@ -5,6 +5,7 @@ SSID="GL-AR750S-a6a-Guest"
 # LimitNOFILE=4096 <- add
 
 # creating too many (more than 140) vif at once, may cause buffer overflow of wpa_supplicant
+date
 sudo systemctl stop NetworkManager
 for i in $(seq -w 16 150); do
     echo "vwlan$i"
@@ -13,7 +14,7 @@ for i in $(seq -w 16 150); do
     sudo iw phy0 interface add vwlan$i type managed addr aa:bb:00:dd:ee:$hex
 done
 # After interface activation, it requires about 9 seconds to connect to an AP
-sleep 10
+sleep 2
 for i in $(seq -w 16 150); do
     sudo wpa_supplicant -B -i vwlan$i -c /etc/wpa_supplicant/wpa_supplicant.conf &
     echo "exit with "$?
@@ -23,7 +24,9 @@ done
 # write out csv to be used in JMeter
 for i in $(seq -w 16 150); do
     sudo dhclient vwlan$i &
-    sleep 1
+    echo "dhcp on vwlan$i"
+    date
+    sleep 10
 done
 sleep 30
 ip -4 a | grep -oP '(?<=inet\s)\d+(\.\d+){3}' | grep -v "127.0.0.1" > ipaddr.csv

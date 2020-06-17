@@ -7,16 +7,16 @@ SSID="GL-AR750S-a6a-Guest"
 # creating too many (more than 140) vif at once, may cause buffer overflow of wpa_supplicant
 date
 sudo systemctl stop NetworkManager
-for i in $(seq -w 16 50); do
+for i in $(seq -w 16 255); do
     echo "vwlan$i"
     hex=$(echo "obase=16; $i" | bc)
     echo "aa:bb:00:dd:ee:"$hex
     sudo iw phy0 interface add vwlan$i type managed addr aa:bb:00:dd:ee:$hex
 done
 # After interface activation, it requires about 9 seconds to connect to an AP
-for i in $(seq -w 16 50); do
+for i in $(seq -w 16 255); do
     date
-    sudo wpa_supplicant -i vwlan$i -c ./wpa_supplicant.conf -dddt >> wpa.log &
+    sudo wpa_supplicant -i vwlan$i -c ./wpa_supplicant.conf  &  # -dddt for debug -B for bg op, but no stdout
     sleep 10
     sudo dhclient vwlan$i &
     echo "dhcp on vwlan$i" &
